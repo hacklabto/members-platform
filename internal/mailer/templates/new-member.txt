@@ -1,0 +1,26 @@
+todo: fix
+Prospective hacklab member {{ .PreferredName }} ({{ .Nickname }}) has applied!
+
+Full application details below:
+
+-----------------------
+
+Name: {{ .PreferredName }} ({{ .Nickname }})
+Username: {{ .Username }}
+Email: {{ .ContactEmail }}
+
+Profile: {{ .PictureUrl }}
+
+Sponsors: {{ .Sponsor1 }}, {{ .Sponsor2 }}
+
+Links:
+{{ if .Links }}{{ .Links }}{{ else }}None provided.{{ end }}
+
+Bio / Why they want to join:
+{{ .ApplicationReason }}
+
+How'd they hear about us:
+{{ if .HeardFrom }}{{ .HeardFrom }}{{ else }}None provided.{{ end }}
+
+Preferred gender pronoun:
+{{ .PreferredPronouns }}

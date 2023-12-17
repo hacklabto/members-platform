@@ -1,0 +1,40 @@
+body {
+    height: 100%;
+}
+
+footer {
+    position: absolute;
+    bottom: 0;
+    border-top: 1px solid black;
+    width: 100%;
+}
+
+.wrapper {
+    max-width: 960px;
+    margin: 0 auto;
+    margin-top: 10px;
+}
+
+@media (max-width: 960px) {
+    .wrapper-inner {
+        margin-left: 10px;
+    }
+}
+
+nav {
+    border-bottom: 1px solid black;
+}
+
+@media (max-width: 768px) {
+    .wrapper-inner {
+        margin-left: 10px;
+    }
+
+    nav div ul:has(~ input) {
+        display: none !important;
+    }
+    
+    nav div ul:has(~ input:checked) {
+        display: unset !important;
+    }
+}

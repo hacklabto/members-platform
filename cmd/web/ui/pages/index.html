@@ -1,0 +1,9 @@
+{{ if IsMemberLoggedIn .Ctx.AuthLevel }}
+<p>Hello, {{ .Ctx.CurrentUsername }}! We don't have much here yet.</p>
+<p>Do you want to look at <a class="underline text-blue-600 hover:text-blue-800" href="https://wiki.hacklab.to">the wiki</a>?</p>
+{{ else }}
+<p>Hello world</p>
+<p>more text should go here eventually</p>
+<br/>
+If you are a current Hacklab member, you can <a class="underline text-blue-600 hover:text-blue-800" href="/login/">log in here</a>. Otherwise, why not <a class="underline text-blue-600 hover:text-blue-800" href="/apply/">become a member</a>?
+{{ end }}
