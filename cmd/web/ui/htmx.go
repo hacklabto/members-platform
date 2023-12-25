@@ -9,7 +9,6 @@ import (
 // todo: check HX-Current-URL and add title to component-only request
 func MaybeHtmxComponent(rw http.ResponseWriter, r *http.Request, page string, data any) {
 	if r.Header.Get("HX-Request") == "true" {
-		log.Println("got htmx request!")
 		if err := Page(rw, page, data); err != nil {
 			log.Println(err)
 		}

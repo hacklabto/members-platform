@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"embed"
 	"fmt"
+	"log"
 	"members-platform/internal/db/queries"
 	"os"
 
@@ -20,7 +21,8 @@ var migrations embed.FS
 
 var DB *queries.Queries
 
-func Connect(doMigrate bool) error {
+func ConnectPG(doMigrate bool) error {
+	log.Println("connecting to postgres")
 	url := os.Getenv("DATABASE_URL")
 	if url == "" {
 		return fmt.Errorf("missing DATABASE_URL in environment")

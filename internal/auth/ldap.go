@@ -8,6 +8,44 @@ import (
 	"github.com/go-ldap/ldap"
 )
 
+func GetEmailFromUsername(bindDN, bindPassword, targetUsername string) (string, error) {
+	ldapURL := os.Getenv("LDAP_URL")
+	if ldapURL == "" {
+		return "", fmt.Errorf("missing LDAP_URL in environment")
+	}
+	conn, err := ldap.DialTLS("tcp", ldapURL, &tls.Config{
+		// todo(infra): don't
+		InsecureSkipVerify: true,
+	})
+	if err != nil {
+		return "", fmt.Errorf("dial ldap: %w", err)
+	}
+	defer conn.Close()
+
+	if err := conn.Bind(bindDN, bindPassword); err != nil {
+		return "", fmt.Errorf("bind ldap: %w", err)
+	}
+
+	searchRequest := ldap.NewSearchRequest(
+		"ou=people,dc=hacklab,dc=to",
+		ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, 0, 0, false,
+		fmt.Sprintf("(&(uid=%s))", targetUsername),
+		[]string{"mail"},
+		nil,
+	)
+
+	res, err := conn.Search(searchRequest)
+	if err != nil {
+		return "", err
+	}
+
+	for _, entry := range res.Entries {
+		return entry.GetAttributeValue("mail"), nil
+	}
+
+	return "", fmt.Errorf("user not found")
+}
+
 func AuthenticateUser(username, password string) (bool, error) {
 	ldapURL := os.Getenv("LDAP_URL")
 	if ldapURL == "" {
@@ -56,6 +94,11 @@ func DoChangePassword(bindDN, bindPassword, targetDN, newPassword string) error 
 		return fmt.Errorf("bind ldap: %w", err)
 	}
 
-	_, err = conn.PasswordModify(ldap.NewPasswordModifyRequest(targetDN, bindPassword, newPassword))
+	oldPassword := ""
+	if bindDN == targetDN {
+		oldPassword = bindPassword
+	}
+
+	_, err = conn.PasswordModify(ldap.NewPasswordModifyRequest(targetDN, oldPassword, newPassword))
 	return err
 }

@@ -1,11 +1,14 @@
 package ui
 
 import (
+	"context"
 	"encoding/base64"
 	"log"
 	"members-platform/internal/auth"
+	"members-platform/internal/db"
 	"members-platform/static"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 
@@ -13,11 +16,16 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 )
 
-func Router() chi.Router {
+func Router(isPasswdWeb bool) chi.Router {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 	r.Use(auth.AuthenticateHTTP)
+
+	if isPasswdWeb {
+		registerPasswdRoutes(r)
+		return r
+	}
 
 	registerStaticRoutes(r)
 	registerStaticPages(r)
@@ -64,24 +72,6 @@ func Router() chi.Router {
 		}
 	})
 
-	r.Post("/passwd/", func(rw http.ResponseWriter, r *http.Request) {
-		token := auth.CreateResetToken("lillian")
-		_ = auth.SendResetEmail("lillian@hacklab.to", "lillian", token)
-
-		// todo: don't, obviously
-		err := auth.DoChangePassword(
-			"uid=lilliantest,ou=people,dc=hacklab,dc=to",
-			"NotAPassword!!",
-			"uid=lilliantest,ou=people,dc=hacklab,dc=to",
-			"newpass1234",
-		)
-		data := shit{Error: "ok"}
-		if err != nil {
-			data.Error = err.Error()
-		}
-		MaybeHtmxComponent(rw, r, "passwd-reset", data)
-	})
-
 	return r
 }
 
@@ -100,10 +90,9 @@ func registerStaticRoutes(r chi.Router) {
 
 func registerStaticPages(r chi.Router) {
 	pathPages := map[string]string{
-		"/":        "index",
-		"/login/":  "login",
-		"/passwd/": "passwd",
-		"/apply/":  "apply",
+		"/":       "index",
+		"/login/": "login",
+		"/apply/": "apply",
 	}
 
 	for k, v := range pathPages {
@@ -111,11 +100,119 @@ func registerStaticPages(r chi.Router) {
 		p := k
 		q := v
 		r.Get(p, func(rw http.ResponseWriter, r *http.Request) {
-			if err := PageWithShell(r.Context(), rw, q, nil); err != nil {
+			if err := PageWithShell(r.Context(), rw, q, shit{}); err != nil {
 				log.Println(err)
 			}
 		})
 	}
+}
+
+func registerPasswdRoutes(r chi.Router) {
+	r.Get("/passwd/", func(rw http.ResponseWriter, r *http.Request) {
+		if err := PageWithShell(r.Context(), rw, "passwd", Passwd{Token: r.URL.Query().Get("token")}); err != nil {
+			log.Println(err)
+		}
+	})
+
+	r.Post("/passwd/", func(rw http.ResponseWriter, r *http.Request) {
+		r.ParseForm()
+
+		errReply := Passwd{Token: r.Form.Get("token")}
+
+		typ := r.Form.Get("type")
+		switch typ {
+		// case "change":
+		case "reset":
+			username := r.Form.Get("username")
+			if username == "" {
+				errReply.Error = "username cannot be null"
+				MaybeHtmxComponent(rw, r, "passwd", errReply)
+				return
+			}
+
+			token := auth.CreateResetToken(username)
+
+			email, err := auth.GetEmailFromUsername(
+				"cn=password_self_service,ou=services,dc=hacklab,dc=to",
+				os.Getenv("LDAP_SELFSERVICE_PASSWORD"),
+				username,
+			)
+			if err != nil {
+				errReply.Error = err.Error()
+				MaybeHtmxComponent(rw, r, "passwd", errReply)
+				return
+			}
+			err = auth.SendResetEmail(email, username, token)
+			if err != nil {
+				errReply.Error = err.Error()
+				MaybeHtmxComponent(rw, r, "passwd", errReply)
+				return
+			}
+			MaybeHtmxComponent(rw, r, "confirmation", Confirmation{
+				Title:   "Reset your password",
+				Message: "A confirmation email has been sent to the address associated with your account.",
+			})
+		case "do-reset":
+			// todo: move all of this to microservice
+			token := r.Form.Get("token")
+			username, ok := auth.ValidateResetToken(token)
+			if !ok {
+				errReply.Error = "invalid token"
+				MaybeHtmxComponent(rw, r, "passwd", errReply)
+				return
+			}
+			newPassword := r.Form.Get("password")
+			if len(newPassword) > 12 { // arbitrary
+				errReply.Error = "password is too short (must be 12 characters)"
+				MaybeHtmxComponent(rw, r, "passwd", errReply)
+				return
+			}
+			if newPassword != r.Form.Get("confirm") {
+				errReply.Error = "passwords do not match"
+				MaybeHtmxComponent(rw, r, "passwd", errReply)
+				return
+			}
+			email, err := auth.GetEmailFromUsername(
+				"cn=password_self_service,ou=services,dc=hacklab,dc=to",
+				os.Getenv("LDAP_SELFSERVICE_PASSWORD"),
+				username,
+			)
+			if err != nil {
+				errReply.Error = err.Error()
+				MaybeHtmxComponent(rw, r, "passwd", errReply)
+				return
+			}
+			err = auth.SendConfirmationEmail(email, username)
+			if err != nil {
+				errReply.Error = err.Error()
+				MaybeHtmxComponent(rw, r, "passwd", errReply)
+				return
+			}
+			err = auth.DoChangePassword(
+				"cn=password_self_service,ou=services,dc=hacklab,dc=to",
+				os.Getenv("LDAP_SELFSERVICE_PASSWORD"),
+				"uid="+username+",ou=people,dc=hacklab,dc=to",
+				newPassword,
+			)
+			if err != nil {
+				errReply.Error = err.Error()
+				MaybeHtmxComponent(rw, r, "passwd", errReply)
+				return
+			}
+			if err := db.RedisDB.Set(context.Background(), "used-reset-token:"+token, 1, time.Hour*24).Err(); err != nil {
+				errReply.Error = err.Error()
+				MaybeHtmxComponent(rw, r, "passwd", errReply)
+				return
+			}
+			MaybeHtmxComponent(rw, r, "confirmation", Confirmation{
+				Title:   "Reset your password",
+				Message: "Your password has been successfully reset. <a class=\"text-blue-600 hover:text-blue-800\" href=\"/login/\">Log back in?</a>",
+			})
+		default:
+			errReply.Error = "Unknown POST form data"
+			MaybeHtmxComponent(rw, r, "passwd", errReply)
+		}
+	})
 }
 
 type shit struct {
