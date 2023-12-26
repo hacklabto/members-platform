@@ -115,7 +115,9 @@ func registerPasswdRoutes(r chi.Router) {
 	})
 
 	r.Post("/passwd/", func(rw http.ResponseWriter, r *http.Request) {
-		r.ParseForm()
+		if err := r.ParseForm(); err != nil {
+			log.Println(err)
+		}
 
 		errReply := Passwd{Token: r.Form.Get("token")}
 
