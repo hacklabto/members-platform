@@ -4,9 +4,12 @@ import (
 	"crypto/tls"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/go-ldap/ldap"
 )
+
+var invalidGroups = []string{"cn=operations", "cn=hacklab-sudoer", "cn=board", "ou=permissions"}
 
 func GetEmailFromUsername(bindDN, bindPassword, targetUsername string) (string, error) {
 	ldapURL := os.Getenv("LDAP_URL")
@@ -30,7 +33,7 @@ func GetEmailFromUsername(bindDN, bindPassword, targetUsername string) (string, 
 		"ou=people,dc=hacklab,dc=to",
 		ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, 0, 0, false,
 		fmt.Sprintf("(&(uid=%s))", targetUsername),
-		[]string{"mail"},
+		[]string{"mail", "memberOf"},
 		nil,
 	)
 
@@ -40,6 +43,14 @@ func GetEmailFromUsername(bindDN, bindPassword, targetUsername string) (string, 
 	}
 
 	for _, entry := range res.Entries {
+		for _, val := range entry.GetAttributeValues("memberOf") {
+			for _, g := range invalidGroups {
+				if strings.Contains(val, g) {
+					return "", fmt.Errorf("user not allowed to reset password by email")
+				}
+			}
+		}
+		//lint:ignore SA4004 "only one entry should ever be found"
 		return entry.GetAttributeValue("mail"), nil
 	}
 
