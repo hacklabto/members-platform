@@ -11,6 +11,8 @@ import (
 
 var invalidGroups = []string{"cn=operations", "cn=hacklab-sudoer", "cn=board", "ou=permissions"}
 
+var ErrInvalidGroup = fmt.Errorf("user is in restricted group, unable to change password by email")
+
 func GetEmailFromUsername(bindDN, bindPassword, targetUsername string) (string, error) {
 	ldapURL := os.Getenv("LDAP_URL")
 	if ldapURL == "" {
@@ -46,7 +48,7 @@ func GetEmailFromUsername(bindDN, bindPassword, targetUsername string) (string, 
 		for _, val := range entry.GetAttributeValues("memberOf") {
 			for _, g := range invalidGroups {
 				if strings.Contains(val, g) {
-					return "", fmt.Errorf("user not allowed to reset password by email")
+					return entry.GetAttributeValue("mail"), ErrInvalidGroup
 				}
 			}
 		}

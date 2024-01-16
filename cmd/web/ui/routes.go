@@ -132,13 +132,33 @@ func registerPasswdRoutes(r chi.Router) {
 				return
 			}
 
-			token := auth.CreateResetToken(username)
+			token, err := auth.CreateResetToken(username)
+			if err != nil {
+				errReply.Error = err.Error()
+				MaybeHtmxComponent(rw, r, "passwd", errReply)
+				return
+			}
 
 			email, err := auth.GetEmailFromUsername(
 				"cn=password_self_service,ou=services,dc=hacklab,dc=to",
 				os.Getenv("LDAP_SELFSERVICE_PASSWORD"),
 				username,
 			)
+
+			if err == auth.ErrInvalidGroup {
+				err = auth.SendResetRestrictedEmail(email, username)
+				if err != nil {
+					errReply.Error = err.Error()
+					MaybeHtmxComponent(rw, r, "passwd", errReply)
+					return
+				}
+				MaybeHtmxComponent(rw, r, "confirmation", Confirmation{
+					Title:   "Reset your password",
+					Message: "A confirmation email has been sent to the address associated with your account.",
+				})
+				return
+			}
+
 			if err != nil {
 				errReply.Error = err.Error()
 				MaybeHtmxComponent(rw, r, "passwd", errReply)
@@ -164,7 +184,7 @@ func registerPasswdRoutes(r chi.Router) {
 				return
 			}
 			newPassword := r.Form.Get("password")
-			if len(newPassword) > 12 { // arbitrary
+			if len(newPassword) < 12 { // arbitrary
 				errReply.Error = "password is too short (must be 12 characters)"
 				MaybeHtmxComponent(rw, r, "passwd", errReply)
 				return
@@ -201,7 +221,7 @@ func registerPasswdRoutes(r chi.Router) {
 				MaybeHtmxComponent(rw, r, "passwd", errReply)
 				return
 			}
-			if err := db.RedisDB.Set(context.Background(), "used-reset-token:"+token, 1, time.Hour*24).Err(); err != nil {
+			if err := db.RedisDB.Del(context.Background(), "reset-token:"+token).Err(); err != nil {
 				errReply.Error = err.Error()
 				MaybeHtmxComponent(rw, r, "passwd", errReply)
 				return
