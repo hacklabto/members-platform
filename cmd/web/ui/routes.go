@@ -3,6 +3,7 @@ package ui
 import (
 	"context"
 	"encoding/base64"
+	"fmt"
 	"log"
 	"members-platform/internal/auth"
 	"members-platform/internal/db"
