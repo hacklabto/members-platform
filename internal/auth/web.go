@@ -68,10 +68,12 @@ func AuthenticateHTTP(next http.Handler) http.Handler {
 			r = r.WithContext(context.WithValue(r.Context(), Ctx__AuthenticatedUser, username))
 			// todo: get >member auth level from db
 			r = r.WithContext(context.WithValue(r.Context(), Ctx__AuthLevel, AuthLevel_Member))
-			next.ServeHTTP(rw, r)
 		} else {
-			rw.WriteHeader(http.StatusUnauthorized)
-			// idk, log out, something
+			r = r.WithContext(context.WithValue(r.Context(), Ctx__AuthenticatedUser, ""))
+			r = r.WithContext(context.WithValue(r.Context(), Ctx__AuthLevel, AuthLevel_LoggedOut))
 		}
+
+		// todo: return 401 on api
+		next.ServeHTTP(rw, r)
 	})
 }

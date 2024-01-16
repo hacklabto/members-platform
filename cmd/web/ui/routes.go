@@ -123,7 +123,29 @@ func registerPasswdRoutes(r chi.Router) {
 
 		typ := r.Form.Get("type")
 		switch typ {
-		// case "change":
+		case "change":
+			newPassword := r.Form.Get("password")
+			if len(newPassword) < 12 { // arbitrary
+				errReply.Error = "password is too short (must be 12 characters)"
+				MaybeHtmxComponent(rw, r, "passwd", errReply)
+				return
+			}
+			if newPassword != r.Form.Get("confirm") {
+				errReply.Error = "passwords do not match"
+				MaybeHtmxComponent(rw, r, "passwd", errReply)
+				return
+			}
+			udn := fmt.Sprintf("uid=%s,ou=people,dc=hacklab,dc=to", r.Context().Value(auth.Ctx__AuthenticatedUser).(string))
+			err := auth.DoChangePassword(udn, r.Form.Get("current"), udn, newPassword)
+			if err != nil {
+				errReply.Error = err.Error()
+				MaybeHtmxComponent(rw, r, "passwd", errReply)
+				return
+			}
+			MaybeHtmxComponent(rw, r, "confirmation", Confirmation{
+				Title:   "Change your password",
+				Message: "Your password has been successfully changed. Please log in again.",
+			})
 		case "reset":
 			username := r.Form.Get("username")
 			if username == "" {
@@ -175,7 +197,6 @@ func registerPasswdRoutes(r chi.Router) {
 				Message: "A confirmation email has been sent to the address associated with your account.",
 			})
 		case "do-reset":
-			// todo: move all of this to microservice
 			token := r.Form.Get("token")
 			username, ok := auth.ValidateResetToken(token)
 			if !ok {
