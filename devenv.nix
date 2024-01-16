@@ -19,6 +19,5 @@
 	env.REDIS_URL = "localhost:6379";
 	env.LDAP_URL = "127.0.0.1:6636";
 	env.SMTP_URL = "127.0.0.1:2525";
-	env.PASSWD_RESET_HASHER_SECRET = "devsecret";
 	env.LDAP_SELFSERVICE_PASSWORD = "password";
 }
