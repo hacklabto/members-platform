@@ -17,8 +17,12 @@ func ConnectRedis() error {
 	if url == "" {
 		return fmt.Errorf("missing REDIS_URL in environment")
 	}
+	opt, err := redis.ParseURL(url)
+	if err != nil {
+		return err
+	}
 
-	RedisDB = redis.NewClient(&redis.Options{Addr: url})
+	RedisDB = redis.NewClient(opt)
 
 	c := RedisDB.Ping(context.Background())
 	return c.Err()

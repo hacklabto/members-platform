@@ -16,7 +16,7 @@
 	'';
 
 	env.DATABASE_URL = "postgresql://postgres:postgres@127.0.0.1:5432/membersdb?sslmode=disable";
-	env.REDIS_URL = "localhost:6379";
+	env.REDIS_URL = "redis://localhost:6379";
 	env.LDAP_URL = "127.0.0.1:6636";
 	env.SMTP_URL = "127.0.0.1:2525";
 	env.LDAP_SELFSERVICE_PASSWORD = "password";
