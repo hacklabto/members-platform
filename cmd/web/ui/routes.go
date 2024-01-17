@@ -17,19 +17,15 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 )
 
-func Router(isPasswdWeb bool) chi.Router {
+func Router() chi.Router {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 	r.Use(auth.AuthenticateHTTP)
 
-	if isPasswdWeb {
-		registerPasswdRoutes(r)
-		return r
-	}
-
 	registerStaticRoutes(r)
 	registerStaticPages(r)
+	registerPasswdRoutes(r)
 
 	// todo: this needs to be POST with CSRF
 	r.Get("/logout/", func(rw http.ResponseWriter, r *http.Request) {
