@@ -18,11 +18,11 @@ func CreateResetToken(username string) (string, error) {
 		return "", fmt.Errorf("failed to read random bytes: %w", err)
 	}
 	token := base64.RawURLEncoding.EncodeToString(b)
-	return token, db.RedisDB.Set(context.Background(), "reset-token:"+token, username, time.Hour*24).Err()
+	return token, db.Redis.Set(context.Background(), "reset-token:"+token, username, time.Hour*24).Err()
 }
 
 func ValidateResetToken(token string) (string, bool) {
-	v, err := db.RedisDB.Get(context.Background(), "reset-token:"+token).Result()
+	v, err := db.Redis.Get(context.Background(), "reset-token:"+token).Result()
 	switch {
 	case err != nil:
 		log.Println(err)

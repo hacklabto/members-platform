@@ -9,7 +9,7 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-var RedisDB *redis.Client
+var Redis *redis.Client
 
 func ConnectRedis() error {
 	log.Println("connecting to redis")
@@ -22,8 +22,8 @@ func ConnectRedis() error {
 		return err
 	}
 
-	RedisDB = redis.NewClient(opt)
+	Redis = redis.NewClient(opt)
 
-	c := RedisDB.Ping(context.Background())
+	c := Redis.Ping(context.Background())
 	return c.Err()
 }

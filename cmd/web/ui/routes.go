@@ -239,7 +239,7 @@ func registerPasswdRoutes(r chi.Router) {
 				MaybeHtmxComponent(rw, r, "passwd", errReply)
 				return
 			}
-			if err := db.RedisDB.Del(context.Background(), "reset-token:"+token).Err(); err != nil {
+			if err := db.Redis.Del(context.Background(), "reset-token:"+token).Err(); err != nil {
 				errReply.Error = err.Error()
 				MaybeHtmxComponent(rw, r, "passwd", errReply)
 				return
