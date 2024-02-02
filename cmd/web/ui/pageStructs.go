@@ -11,3 +11,7 @@ type Confirmation struct {
 	Title   string
 	Message template.HTML
 }
+
+type ApplyData struct {
+	Error string
+}

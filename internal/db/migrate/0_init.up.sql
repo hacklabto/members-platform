@@ -1,5 +1,17 @@
 -- todo: proper schema idk
 
+create table temp_waiver_signatures (
+    signature_id uuid not null,
+    member_username text,
+    legal_name text not null,
+    preferred_name text,
+    date text not null,
+    emergency_contact_name text not null,
+    emergency_contact_number text not null,
+    signature text not null,
+    witness_member text
+);
+
 create table applicants (
     id serial primary key,
     preferred_name text not null,
@@ -29,6 +41,7 @@ create table members (
     bio_freeform text,
     user_groups text[] not null default array[]::text[],
     is_current_member bool not null default true,
+    join_date timestamp not null,
 
     -- board-only fields
     application_id int not null references applicants(id),
@@ -36,5 +49,13 @@ create table members (
     waiver_sign_date timestamp,
     access_card_id text,
     emergency_contact text,
+    balance_owing int,
     helcim_subscription_id text
+);
+
+create table bins (
+    id text primary key,
+    assigned_to_member int references members(id) on delete set null,
+    assigned_to_function text,
+    check (assigned_to_member is null or assigned_to_function is null)
 );

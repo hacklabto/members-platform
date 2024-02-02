@@ -30,3 +30,20 @@ func ExecuteTemplate(tmpl string, data any) (string, error) {
 
 	return w.String(), nil
 }
+
+const footerLists = "\n--------------\n\nThis was an automated email sent by lists.hacklab.to"
+
+// Same as ExecuteTemplate, but prefixes templates with "lists-", and
+// adds a different footer to the templates
+func ExecuteTemplateLists(tmpl string, data any) (string, error) {
+	w := bytes.NewBuffer([]byte{})
+
+	if err := emails.ExecuteTemplate(w, "lists-"+tmpl+".txt", data); err != nil {
+		return "", fmt.Errorf("execute email template: %w", err)
+	}
+	if _, err := w.Write([]byte(footerLists)); err != nil {
+		return "", fmt.Errorf("write email footer: %w", err)
+	}
+
+	return w.String(), nil
+}

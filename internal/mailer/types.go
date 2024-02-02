@@ -5,3 +5,8 @@ type ResetPasswordData struct {
 	Username  string
 	Token     string
 }
+
+type ListsErrorReply struct {
+	ToAddress string
+	Errors    string
+}

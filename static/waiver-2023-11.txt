@@ -1,0 +1,34 @@
+# HackLab.TO
+# Release and Waiver of Liability, Assumption of Risk, and Indemnity Consent Agreement
+
+Participant Name _______
+Preferred Name (if different than legal name, just so we know who you are)
+Date _______
+
+### Emergency Contact:
+Name _______
+Phone Number _______
+
+In CONSIDERATION of being permitted to participate in the activities of Hacklab Toronto Club Inc (“HackLab”),
+
+I, for myself, personal representatives, assigns, and next of kin:
+    ● Acknowledge, agree, and represent that
+        ○ I understand the nature of Hacklab's activities;
+        ○ I am sober, qualified, in good health, and in proper physical, and mental condition to participate;
+        ○ If at any time I believe conditions to be unsafe, I will **immediately** discontinue further participation in the activities.
+    ● Fully understand that
+        ○ These activities may involve risks and dangers of serious bodily injury, **including permanent disability, and death** ("Risks");
+        ○ These Risks may be caused by my own (in)actions, the (in)actions of others participants, the condition in which the activities take place, or the negligence of the "Releasees" named below;
+        ○ There may be **other risks and social and economic losses** either not known nor readily foreseeable at this time; and
+        ○ I **fully accept and assume all such risks** and all responsibility for losses, costs, and damages I incur as a result of my participation.
+    ● Hereby release, discharge, and covenant not to sue
+        ○ HackLab, their respective directors, officers, members, volunteers, and other participants, any sponsors, advertisers, and owner and lessors of premises, (the "Releasees" herein)
+        ○ From all liability, claims, demands, losses, or damages on my account caused or alleged to be caused in whole or in part by the negligence of the "Releasees" or otherwise, including negligent rescue operations;
+        ○ If, despite this agreement I, or anyone on my behalf, makes a claim against any of the Releasees, I will indemnify, save, and hold harmless each of the Releasees from any cost which may incur as the result of such claim.
+
+I have **read this agreement**, fully **understand its terms**, understand that I have **given up substantial rights** by signing it and have **signed it freely and without inducement or assurance** and intend it to be a **complete and unconditional release of all liability to the greatest extent allowed by law** and agree that if any portion of this agreement is held to be invalid the balance, notwithstanding, shall continue in full force and effect.
+
+Signature _______
+HackLab Witness _______
+
+Updated November 2023

@@ -1,2 +1,68 @@
+{{ if IsLoggedOut .Ctx.AuthLevel }}
+<form class="w-full max-w-sm" hx-post="/apply/" method="post">
+	<h2 class="text-xl">Membership Application</h2>
+	<br>
+	<input type="hidden" name="type" value="login" />
+	Enter the password to apply:
+	<div class="md:flex md:items-center mb-6">
+		<div class="md:w-2/3">
+			<input class="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white" id="inline-password" type="password" name="password">
+		</div>
+	</div>
+	<button class="shadow bg-blue-500 hover:bg-blue-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded" type="submit">
+		Log in
+	</button>
+	{{ if .Data }}
+	{{ if .Data.Error }}
+	<p class="text-red-500">Error: {{ .Data.Error }}</p>
+	{{ end }}
+	{{ end }}
+</form>
+{{ else if IsMemberLoggedIn .Ctx.AuthLevel }}
+<h2 class="text-xl">Membership Application</h2>
+<br>
+<p>You are already a member!</p>
+{{ else }}
 <!-- todo: ask for APPLY_PASSWORD env variable, add to session -->
-<p>TODO: put form here</p>
+<form>
+	<h2 class="text-xl">Membership Application</h2>
+	<div class="columns-2xs">
+		<label class="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4" for="inline-full-name">
+			Preferred Full Name
+		</label>
+		<input class="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white" id="inline-full-name" type="text" name="username">
+		<label class="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4" for="inline-full-name">
+			Username
+		</label>
+		<input class="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white" id="inline-full-name" type="text" name="username">
+		<label class="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4" for="inline-full-name">
+			Nickname
+		</label>
+		<input class="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white" id="inline-full-name" type="text" name="username">
+		<label class="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4" for="inline-full-name">
+			Contact Email address
+		</label>
+		<input class="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white" id="inline-full-name" type="text" name="username">
+		<label class="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4" for="inline-full-name">
+			Mailing List Email address
+		</label>
+		<input class="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white" id="inline-full-name" type="text" name="username">
+	</div>
+	<br>
+	<label class="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4" for="inline-full-name">
+		Why do you want to join Hacklab?
+	</label>
+	<input class="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white" id="inline-full-name" type="text" name="username">
+	<br>
+	<div class="columns-2xs">
+		<label class="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4" for="inline-full-name">
+			Name of first sponsoring member
+		</label>
+		<input class="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white" id="inline-full-name" type="text" name="username">
+		<label class="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4" for="inline-full-name">
+			Name of second sponsoring member
+		</label>
+		<input class="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white" id="inline-full-name" type="text" name="username">
+	</div>
+</form>
+{{ end }}

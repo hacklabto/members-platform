@@ -6,6 +6,9 @@ package queries
 
 import (
 	"database/sql"
+	"time"
+
+	"github.com/google/uuid"
 )
 
 type Applicant struct {
@@ -26,6 +29,12 @@ type Applicant struct {
 	ApplicationState  int32
 }
 
+type Bin struct {
+	ID                 string
+	AssignedToMember   sql.NullInt32
+	AssignedToFunction sql.NullString
+}
+
 type Member struct {
 	ID                   int32
 	PreferredName        string
@@ -37,10 +46,24 @@ type Member struct {
 	BioFreeform          sql.NullString
 	UserGroups           []string
 	IsCurrentMember      bool
+	JoinDate             time.Time
 	ApplicationID        int32
 	LegalName            sql.NullString
 	WaiverSignDate       sql.NullTime
 	AccessCardID         sql.NullString
 	EmergencyContact     sql.NullString
+	BalanceOwing         sql.NullInt32
 	HelcimSubscriptionID sql.NullString
+}
+
+type TempWaiverSignature struct {
+	SignatureID            uuid.UUID
+	MemberUsername         sql.NullString
+	LegalName              string
+	PreferredName          sql.NullString
+	Date                   string
+	EmergencyContactName   string
+	EmergencyContactNumber string
+	Signature              string
+	WitnessMember          sql.NullString
 }

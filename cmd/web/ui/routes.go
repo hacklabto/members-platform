@@ -69,6 +69,24 @@ func Router() chi.Router {
 		}
 	})
 
+	r.Post("/apply/", func(w http.ResponseWriter, r *http.Request) {
+		if err := r.ParseForm(); err != nil {
+			log.Println(err)
+		}
+
+		// todo: parse form to here
+		// https://godocs.io/github.com/go-playground/form
+		// todo: validate
+		// https://godocs.io/github.com/go-playground/validator/v10
+		// errReply := ApplyData{}
+
+		// switch r.Form.Get("type") {
+		// case "login":
+		// 	password := r.Form.Get("password")
+		// 	correctPassword := ""
+		// }
+	})
+
 	return r
 }
 

@@ -1,5 +1,5 @@
 /*
-! tailwindcss v3.4.0 | MIT License | https://tailwindcss.com
+! tailwindcss v3.4.1 | MIT License | https://tailwindcss.com
 */
 
 /*
@@ -635,6 +635,11 @@ video {
           appearance: none;
 }
 
+.columns-2xs {
+  -moz-columns: 18rem;
+       columns: 18rem;
+}
+
 .flex-col {
   flex-direction: column;
 }
@@ -907,7 +912,7 @@ video {
   }
 }
 
-:is(:where([dir="rtl"]) .rtl\:space-x-reverse) > :not([hidden]) ~ :not([hidden]) {
+.rtl\:space-x-reverse:where([dir="rtl"], [dir="rtl"] *) > :not([hidden]) ~ :not([hidden]) {
   --tw-space-x-reverse: 1;
 }
 

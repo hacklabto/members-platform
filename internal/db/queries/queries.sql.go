@@ -34,9 +34,28 @@ from members
 where id = $1
 `
 
-func (q *Queries) GetMemberFull(ctx context.Context, id int32) (Member, error) {
+type GetMemberFullRow struct {
+	ID                   int32
+	PreferredName        string
+	PreferredPronouns    string
+	Username             string
+	ContactEmail         string
+	ListEmail            sql.NullString
+	PictureUrl           string
+	BioFreeform          sql.NullString
+	UserGroups           []string
+	IsCurrentMember      bool
+	ApplicationID        int32
+	LegalName            sql.NullString
+	WaiverSignDate       sql.NullTime
+	AccessCardID         sql.NullString
+	EmergencyContact     sql.NullString
+	HelcimSubscriptionID sql.NullString
+}
+
+func (q *Queries) GetMemberFull(ctx context.Context, id int32) (GetMemberFullRow, error) {
 	row := q.db.QueryRowContext(ctx, getMemberFull, id)
-	var i Member
+	var i GetMemberFullRow
 	err := row.Scan(
 		&i.ID,
 		&i.PreferredName,
