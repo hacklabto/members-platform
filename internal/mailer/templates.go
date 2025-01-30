@@ -30,3 +30,13 @@ func ExecuteTemplate(tmpl string, data any) (string, error) {
 
 	return w.String(), nil
 }
+
+func ExecuteTemplateWithoutFooter(tmpl string, data any) (string, error) {
+	w := bytes.NewBuffer([]byte{})
+
+	if err := emails.ExecuteTemplate(w, tmpl+".txt", data); err != nil {
+		return "", fmt.Errorf("execute email template: %w", err)
+	}
+
+	return w.String(), nil
+}

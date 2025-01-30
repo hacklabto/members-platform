@@ -7,14 +7,17 @@ import (
 	"log"
 	"members-platform/internal/auth"
 	"members-platform/internal/db"
+	"members-platform/internal/mailer"
 	"members-platform/static"
 	"net/http"
+	"net/mail"
 	"os"
 	"strings"
 	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/adtac/go-akismet/akismet"
 )
 
 func Router() chi.Router {
@@ -22,6 +25,104 @@ func Router() chi.Router {
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 	r.Use(auth.AuthenticateHTTP)
+
+	// contact form
+	r.Post("/wp-json/contact-form-7/v1/contact-forms/844/feedback", func(rw http.ResponseWriter, r *http.Request) {
+		email := mailer.ContactFormData{
+			UserName: r.FormValue("your-name"),
+			UserEmail: r.FormValue("your-email"),
+			Subject: r.FormValue("your-subject"),
+			Message: r.FormValue("your-message"),
+
+			Border: "#ffb900",
+		}
+
+		// validate form
+		var validateErr error
+		if email.UserName == "" {
+			validateErr = fmt.Errorf("name is missing")
+		}
+		if validateErr == nil {
+			if email.UserEmail == "" {
+				validateErr = fmt.Errorf("email is missing")
+			} else {
+				_, validateErr = mail.ParseAddress(email.UserEmail)
+			}
+		}
+		if validateErr == nil {
+			cityQuiz := r.FormValue("city-quiz")
+			// :)
+			if cityQuiz == "" || strings.ToLower(cityQuiz) != os.Getenv("CONTACT_FORM_QUIZ") {
+				validateErr = fmt.Errorf("Your answer is not correct")
+			}
+		}
+
+		akismetKey := os.Getenv("AKISMET_KEY")
+		if validateErr == nil && akismetKey != "" {
+			// antispam
+			// todo: make this work
+			// is a pain to get the source ip since http is forwarded from the old vps
+			// but that's a problem for later
+			isSpam, err := akismet.Check(&akismet.Comment{
+				Blog: "https://hacklab.to",
+				UserIP: "8.8.8.8",
+				UserAgent: "...",
+				CommentType: "contact-form",
+				CommentAuthor: email.UserName,
+				CommentAuthorEmail: email.UserEmail,
+				CommentContent: email.Message,
+			}, akismetKey)
+
+			if err != nil {
+				log.Println(err)
+				validateErr = fmt.Errorf("server error, please try again or contact operations@ (1)")
+			}
+
+			if isSpam {
+				log.Printf("spam check failed for contact form message from %s (%s)", email.UserName, email.UserEmail)
+				validateErr = fmt.Errorf("Validation failed")
+			}
+		}
+
+		if validateErr != nil {
+			if !strings.Contains(validateErr.Error(), "server error") {
+				email.Error = fmt.Sprintf("Validation errors occurred. Please confirm the fields and submit it again. (%s)", validateErr)
+			} else {
+				email.Error = validateErr.Error()
+			}
+
+			if err := Page(rw, "contact", email); err != nil {
+				log.Println(err)
+			}
+			return
+		}
+
+		content, err := mailer.ExecuteTemplateWithoutFooter("contact-form", email)
+		if err != nil {
+			log.Println(err)
+			email.Error = "server error, please try again or contact operations@ (2)"
+			if err := Page(rw, "contact", email); err != nil {
+				log.Println(err)
+			}
+			return
+		}
+
+		err = mailer.DoSendEmail("info@hacklab.to", content)
+		if err != nil {
+			log.Println(err)
+			email.Error = "server error, please try again or contact operations@ (3)"
+			if err := Page(rw, "contact", email); err != nil {
+				log.Println(err)
+			}
+			return
+		}
+
+		email.Border = "#00a0d2"
+		email.Error = "Your message was sent successfully!"
+		if err := Page(rw, "contact", email); err != nil {
+			log.Println(err)
+		}
+	})
 
 	registerStaticRoutes(r)
 	registerStaticPages(r)

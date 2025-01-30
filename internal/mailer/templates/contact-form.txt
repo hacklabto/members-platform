@@ -1,0 +1,13 @@
+From: Hacklab.TO Contact Form <info@hacklab.to>
+Reply-To: {{ .UserEmail }}
+To: info@hacklab.to
+Subject: HACKLAB.TO CONTACT FORM -- {{ .Subject }}
+
+From {{ .UserName }} <{{ .UserEmail }}>
+Subject: {{ .Subject }}
+
+Message body:
+{{ .Message }}
+
+--
+Sent via contact form at https://hacklab.to/contact/
