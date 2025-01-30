@@ -107,7 +107,7 @@ func Router() chi.Router {
 			return
 		}
 
-		err = mailer.DoSendEmail("info@hacklab.to", content)
+		err = mailer.DoSendEmailInner("info@hacklab.to", "info@hacklab.to", content)
 		if err != nil {
 			log.Println(err)
 			email.Error = "server error, please try again or contact operations@ (3)"

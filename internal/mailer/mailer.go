@@ -7,6 +7,10 @@ import (
 )
 
 func DoSendEmail(email, content string) error {
+	return DoSendEmailInner("operations+automated@hacklab.to", email, content)
+}
+
+func DoSendEmailInner(src, email, content string) error {
 	smtpServer := os.Getenv("SMTP_URL")
 	if smtpServer == "" {
 		return fmt.Errorf("missing SMTP_URL in environment")
