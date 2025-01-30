@@ -22,7 +22,7 @@ func DoSendEmailInner(src, email, content string) error {
 	}
 	defer conn.Close()
 
-	if err := conn.Mail("operations+automated@hacklab.to"); err != nil {
+	if err := conn.Mail(src); err != nil {
 		return fmt.Errorf("conn.Mail: %w", err)
 	}
 
