@@ -7,6 +7,7 @@ import (
 	"log"
 	"members-platform/internal/auth"
 	"members-platform/internal/db"
+	"members-platform/internal/db/queries"
 	"members-platform/internal/mailer"
 	"members-platform/static"
 	"net/http"
@@ -127,6 +128,20 @@ func Router() chi.Router {
 	registerStaticRoutes(r)
 	registerStaticPages(r)
 	registerPasswdRoutes(r)
+
+	r.Get("/whos-who/", func(rw http.ResponseWriter, r *http.Request) {
+		var members []queries.Member
+		if r.Context().Value(auth.Ctx__AuthLevel).(auth.AuthLevel) >= auth.AuthLevel_Member {
+			var err error
+			members, err = db.DB.GetMembers(r.Context())
+			if err != nil {
+				log.Println(err)
+			}
+		}
+		if err := PageWithShell(r.Context(), rw, "whos-who", members); err != nil {
+			log.Println(err)
+		}
+	})
 
 	// todo: this needs to be POST with CSRF
 	r.Get("/logout/", func(rw http.ResponseWriter, r *http.Request) {

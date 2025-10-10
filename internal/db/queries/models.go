@@ -8,39 +8,16 @@ import (
 	"database/sql"
 )
 
-type Applicant struct {
-	ID                int32
-	PreferredName     string
-	PreferredPronouns sql.NullString
-	Nickname          string
-	Username          string
-	ContactEmail      string
-	ListEmail         sql.NullString
-	ApplicationReason string
-	Sponsor1          string
-	Sponsor2          string
-	PictureUrl        string
-	HeardFrom         sql.NullString
-	Links             sql.NullString
-	TokenType         int32
-	ApplicationState  int32
-}
-
 type Member struct {
-	ID                   int32
-	PreferredName        string
-	PreferredPronouns    string
-	Username             string
-	ContactEmail         string
-	ListEmail            sql.NullString
-	PictureUrl           string
-	BioFreeform          sql.NullString
-	UserGroups           []string
-	IsCurrentMember      bool
-	ApplicationID        int32
-	LegalName            sql.NullString
-	WaiverSignDate       sql.NullTime
-	AccessCardID         sql.NullString
-	EmergencyContact     sql.NullString
-	HelcimSubscriptionID sql.NullString
+	Username     string
+	Name         string
+	Picture      sql.NullString
+	PictureThumb sql.NullString
+	JoinDate     sql.NullString
+	ReferTo      sql.NullString
+	ContactInfo  sql.NullString
+	Interests    sql.NullString
+	Badges       []string
+	Board        bool
+	Sudoer       bool
 }

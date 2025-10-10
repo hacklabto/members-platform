@@ -7,7 +7,7 @@
 	<link rel="stylesheet" type="text/css" href="/static/style.css"/>
 	<script src="/static/htmx.min.js"></script>
 </head>
-<body hx-boost="true" class="bg-white dark:bg-gray-900 dark:text-white">
+<body hx-boost="true" class="bg-white dark:bg-gray-900 dark:text-white flex flex-col min-h-screen pb-16">
 	<nav class="border-gray-200">
 		<div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
 			<a href="/" class="flex items-center space-x-3 rtl:space-x-reverse">
@@ -29,10 +29,24 @@
 				{{ end }}
 				{{ if IsMemberLoggedIn .Ctx.AuthLevel }}
 				<li>
-					<a href="/passwd/" class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Change Password</a>
-				</li>
-				<li>
-					<a href="/logout/" class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Log Out</a>
+					<div class="relative inline-block text-left">
+				  <div onclick="handleMenuButtonClick()">
+				    <button id="menu-button" type="button" class="inline-flex justify-center w-full rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" id="menu-button" aria-expanded="true" aria-haspopup="true">
+				      Logged in as {{ .Ctx.CurrentUsername }}
+				      <svg class="-mr-1 ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+				        <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06 0L10 10.414l3.71-3.203a.75.75 0 111.06 1.06l-4.25 3.5a.75.75 0 01-1.06 0l-4.25-3.5a.75.75 0 010-1.06z" clip-rule="evenodd" />
+				      </svg>
+				    </button>
+				  </div>
+
+				  <div id="dropdown-menu" class="absolute right-0 z-10 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 hidden">
+				    <div class="py-1" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
+				      <a href="/profile/" class="block px-4 py-2 text-sm text-gray-700 md:hover:text-blue-700" role="menuitem">Settings</a>
+				      <a href="/passwd/" class="block px-4 py-2 text-sm text-gray-700 md:hover:text-blue-700" role="menuitem">Change Password</a>
+				      <a href="/logout/" class="block px-4 py-2 text-sm text-gray-700 md:hover:text-blue-700" role="menuitem">Log Out</a>
+				    </div>
+				  </div>
+				</div>
 				</li>
 				{{ end }}
 			</ul>
@@ -46,14 +60,32 @@
 		</div>
 	</nav>
 
-	<div class="wrapper">
+	<div class="wrapper flex-grow">
 		<div class="wrapper-inner">
 			{{ .Data.UnsafeInnerHTML }}
 		</div>
 	</div>
 
-	<footer class="p-2 text-sm border-gray-200 flex flex-wrap justify-between">
+	<footer class="p-2 text-sm border-gray-200 flex flex-wrap justify-between bg-white dark:bg-gray-900 fixed">
 		<p>&copy; <a class="text-blue-600 hover:text-blue-800" href="https://hacklab.to">Hacklab.to</a> {{ .Data.CurrentYearForCopyright }} | Bug/problem? Email <code>operations[at]hacklab.to</code></p>
 		<a class="text-blue-600 hover:text-blue-800" href="https://github.com/hacklabto/members-platform">Source code</a>
 	</footer>
+
+	<script>
+	    const handleMenuButtonClick = () => {
+			    const menuButton = document.getElementById('menu-button');
+			    const dropdownMenu = document.getElementById('dropdown-menu');
+	        const isOpen = dropdownMenu.classList.toggle('hidden');
+	        menuButton.setAttribute('aria-expanded', !isOpen);
+	    };
+
+	    window.addEventListener('click', (event) => {
+			    const menuButton = document.getElementById('menu-button');
+			    const dropdownMenu = document.getElementById('dropdown-menu');
+	        if (!menuButton.contains(event.target) && !dropdownMenu.contains(event.target)) {
+	            dropdownMenu.classList.add('hidden');
+	            menuButton.setAttribute('aria-expanded', 'false');
+	        }
+	    });
+	</script>
 </body>

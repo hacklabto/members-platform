@@ -1,0 +1,98 @@
+{{ if IsMemberLoggedIn .Ctx.AuthLevel }}
+<style>
+.wrapper {
+  max-width: 90%;
+}
+tr, td {
+  border-style: solid !important;
+  border-width: 1px !important;
+}
+</style>
+<h1 class="text-4xl">Who's Who</h1>
+<p>Contact details, links to photos, and other info about HackLab members and denizens. A "face book" if you will. :)<p>
+<p>See also: <a class="underline text-blue-600 hover:text-blue-800" href="https://wiki.hacklab.to/Who%27s_Who/Alumni">Alumni</a></p>
+
+<br/><br/>
+<h2 class="text-2xl">Board members</h2>
+
+<table class="table-auto">
+  <tr>
+  <th>name/nick</th>
+  <th>preferred name, pronouns</th>
+  <th>contact information (e-mail, cell number, website, Twitter, ham call sign)</th>
+  <th>areas of expertise/interest</th>
+  <th>lab skillz</th>
+  </tr>
+
+  {{ range $value := .Data }}{{ if $value.Board }}
+  <tr>
+    <td>
+      {{ $value.Name }} (<b>{{ $value.Username }}</b>)
+      <br/>
+      <a href="https://wiki.hacklab.to{{ $value.Picture.String }}">
+        <img src="https://wiki.hacklab.to{{ $value.PictureThumb.String }}" />
+      </a>
+      <br/>
+      {{ $value.JoinDate.String }}
+    </td>
+    <td>
+      {{ $value.ReferTo.String }}
+    </td>
+    <td>
+      {{ $value.ContactInfo.String }}
+    </td>
+    <td>
+      {{ $value.Interests.String }}
+    </td>
+    <td>
+      {{ range $badge := $value.Badges }}
+        <img src="/static/images/{{ $badge }}.png" />
+      {{ end }}
+    </td>
+  </tr>
+  {{ end }}{{ end }}
+</table>
+
+<br><br>
+<h2 class="text-2xl">Members</h2>
+
+<table class="table-auto">
+  <tr>
+  <th>name/nick</th>
+  <th>preferred name, pronouns</th>
+  <th>contact information (e-mail, cell number, website, Twitter, ham call sign)</th>
+  <th>areas of expertise/interest</th>
+  <th>lab skillz</th>
+  </tr>
+
+  {{ range $value := .Data }}{{ if not $value.Board }}
+  <tr>
+    <td>
+      {{ $value.Name }} (<b>{{ $value.Username }}</b>)
+      <br/>
+      <a href="https://wiki.hacklab.to{{ $value.Picture.String }}">
+        <img src="https://wiki.hacklab.to{{ $value.PictureThumb.String }}" />
+      </a>
+      <br/>
+      {{ $value.JoinDate.String }}
+    </td>
+    <td>
+      {{ $value.ReferTo.String }}
+    </td>
+    <td>
+      {{ $value.ContactInfo.String }}
+    </td>
+    <td>
+      {{ $value.Interests.String }}
+    </td>
+    <td>
+      {{ range $badge := $value.Badges }}
+        <img src="/static/images/{{ $badge }}.png" />
+      {{ end }}
+    </td>
+  </tr>
+  {{ end }}{{ end }}
+</table>
+{{ else }}
+please log in
+{{ end }}

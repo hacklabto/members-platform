@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-//go:generate npx tailwindcss -o tailwind.css --content "../cmd/web/ui/**/*"
+//go:generate npx tailwindcss@3 -o tailwind.css --content "../cmd/web/ui/**/*"
 
 //go:embed *
 var files embed.FS
