@@ -2,6 +2,7 @@ package ui
 
 import (
 	"context"
+	"database/sql"
 	"encoding/base64"
 	"fmt"
 	"log"
@@ -141,6 +142,69 @@ func Router() chi.Router {
 		if err := PageWithShell(r.Context(), rw, "whos-who", members); err != nil {
 			log.Println(err)
 		}
+	})
+
+	r.Get("/profile/", func(rw http.ResponseWriter, r *http.Request) {
+		var member queries.Member
+		if u := r.Context().Value(auth.Ctx__AuthenticatedUser).(string); u != "" {
+			var err error
+			member, err = db.DB.GetMemberByUsername(r.Context(), u)
+			if err != nil {
+				log.Println(err)
+			}
+		}
+		if err := PageWithShell(r.Context(), rw, "profile", member); err != nil {
+			log.Println(err)
+		}
+	})
+
+	r.Post("/profile/", func(rw http.ResponseWriter, r *http.Request) {
+		u := r.Context().Value(auth.Ctx__AuthenticatedUser).(string)
+		if u == "" {
+			return
+		}
+
+		if err := r.ParseForm(); err != nil {
+			rw.Write([]byte(fmt.Sprintf("error parsing form: %w", err)))
+			return
+		}
+
+		var refer_to string
+		var contact string
+		var interests string
+
+		if v, ok := r.Form["refer_to"]; ok && len(v) == 1 {
+			refer_to = v[0]
+		} else {
+			rw.Write([]byte("error parsing form: refer_to is missing or invalid"))
+			return
+		}
+
+		if v, ok := r.Form["contact"]; ok && len(v) == 1 {
+			contact= v[0]
+		} else {
+			rw.Write([]byte("error parsing form: contact is missing or invalid"))
+			return
+		}
+
+		if v, ok := r.Form["interests"]; ok && len(v) == 1 {
+			interests= v[0]
+		} else {
+			rw.Write([]byte("error parsing form: interests is missing or invalid"))
+			return
+		}
+
+		if err := db.DB.UpdateProfile(r.Context(), queries.UpdateProfileParams{
+			Username: u,
+			ReferTo: sql.NullString{String: refer_to, Valid: true},
+			ContactInfo: sql.NullString{String: contact, Valid: true},
+			Interests: sql.NullString{String: interests, Valid: true},
+		}); err != nil {
+			rw.Write([]byte("error parsing form: interests is missing or invalid"))
+			return
+		}
+
+		rw.Header().Set("hx-refresh", "true")
 	})
 
 	// todo: this needs to be POST with CSRF

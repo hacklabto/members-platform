@@ -7,9 +7,33 @@ package queries
 
 import (
 	"context"
+	"database/sql"
 
 	"github.com/lib/pq"
 )
+
+const getMemberByUsername = `-- name: GetMemberByUsername :one
+select username, name, picture, picture_thumb, join_date, refer_to, contact_info, interests, badges, board, sudoer from members where username = $1
+`
+
+func (q *Queries) GetMemberByUsername(ctx context.Context, username string) (Member, error) {
+	row := q.db.QueryRowContext(ctx, getMemberByUsername, username)
+	var i Member
+	err := row.Scan(
+		&i.Username,
+		&i.Name,
+		&i.Picture,
+		&i.PictureThumb,
+		&i.JoinDate,
+		&i.ReferTo,
+		&i.ContactInfo,
+		&i.Interests,
+		pq.Array(&i.Badges),
+		&i.Board,
+		&i.Sudoer,
+	)
+	return i, err
+}
 
 const getMembers = `-- name: GetMembers :many
 select username, name, picture, picture_thumb, join_date, refer_to, contact_info, interests, badges, board, sudoer from members order by lower(username) asc
@@ -48,4 +72,25 @@ func (q *Queries) GetMembers(ctx context.Context) ([]Member, error) {
 		return nil, err
 	}
 	return items, nil
+}
+
+const updateProfile = `-- name: UpdateProfile :exec
+update members set refer_to = $1, contact_info = $2, interests = $3 where username = $4
+`
+
+type UpdateProfileParams struct {
+	ReferTo     sql.NullString
+	ContactInfo sql.NullString
+	Interests   sql.NullString
+	Username    string
+}
+
+func (q *Queries) UpdateProfile(ctx context.Context, arg UpdateProfileParams) error {
+	_, err := q.db.ExecContext(ctx, updateProfile,
+		arg.ReferTo,
+		arg.ContactInfo,
+		arg.Interests,
+		arg.Username,
+	)
+	return err
 }

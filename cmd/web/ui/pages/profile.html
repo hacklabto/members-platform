@@ -1,0 +1,58 @@
+{{ if IsMemberLoggedIn .Ctx.AuthLevel }}
+<style>
+.wrapper {
+  min-width: 50%;
+}
+</style>
+<h1 class="text-4xl">Your Profile</h1>
+<br />
+<p>
+The information below is shown on the <a href="/whos-who/">Who's Who</a> page. Some is freely editable, but please contact Operations if you would like to change your name, username, or picture.
+<br />
+Fields are parsed as HTML (for now).
+</p>
+
+<br /><br />
+
+<div class="flex items-center p-4">
+  <a href="https://wiki.hacklab.to{{ .Data.Picture.String }}" class="mr-4">
+    <img src="https://wiki.hacklab.to{{ .Data.PictureThumb.String }}" />
+  </a>
+  <p>
+    {{ .Data.Name }} ({{ .Data.Username }})
+    <br />
+    Joined Hacklab on {{ .Data.JoinDate.String }}
+  </p>
+</div>
+<hr class="my-12 h-0.5 border-t-0 bg-neutral-100 dark:bg-white/10" />
+
+<form action="#" method="POST">
+  <div class="sm:col-span-2">
+    <label for="refer_to" class="block text-sm/6 font-semibold text-white">Nickname / preferred pronouns / etc</label>
+    <div class="mt-2.5">
+      <textarea id="refer_to" name="refer_to" rows="4" class="block w-full rounded-md bg-white/5 px-3.5 py-2 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500">{{ .Data.ReferTo.String }}</textarea>
+    </div>
+  </div>
+  <br />
+  <div class="sm:col-span-2">
+    <label for="contact" class="block text-sm/6 font-semibold text-white">Contact Info</label>
+    <div class="mt-2.5">
+      <textarea id="contact" name="contact" rows="4" class="block w-full rounded-md bg-white/5 px-3.5 py-2 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500">{{ .Data.ContactInfo.String }}</textarea>
+    </div>
+  </div>
+  <br />
+  <div class="sm:col-span-2">
+    <label for="interests" class="block text-sm/6 font-semibold text-white">Interests</label>
+    <div class="mt-2.5">
+      <textarea id="interests" name="interests" rows="4" class="block w-full rounded-md bg-white/5 px-3.5 py-2 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500">{{ .Data.Interests.String }}</textarea>
+    </div>
+  </div>
+  <br />
+	<button class="shadow bg-blue-500 hover:bg-blue-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded" type="submit">
+		Save
+	</button>
+</form>
+
+{{ else }}
+please log in
+{{ end }}
