@@ -11,6 +11,8 @@ tr, td {
 <h1 class="text-4xl">Who's Who</h1>
 <p>Contact details, links to photos, and other info about HackLab members and denizens. A "face book" if you will. :)<p>
 <p>See also: <a class="underline text-blue-600 hover:text-blue-800" href="https://wiki.hacklab.to/Who%27s_Who/Alumni">Alumni</a></p>
+<br/>
+<p>Update your info <a class="underline text-blue-600 hover:text-blue-800" href="/profile/">here</a></p>
 
 <br/><br/>
 <h2 class="text-2xl">Board members</h2>
@@ -29,8 +31,8 @@ tr, td {
     <td>
       {{ $value.Name }} (<b>{{ $value.Username }}</b>)
       <br/>
-      <a href="https://wiki.hacklab.to{{ $value.Picture.String }}">
-        <img src="https://wiki.hacklab.to{{ $value.PictureThumb.String }}" />
+      <a href="{{ $value.Picture.String }}">
+        <img src="{{ $value.PictureThumb.String }}" />
       </a>
       <br/>
       {{ $value.JoinDate.String }}
@@ -70,8 +72,8 @@ tr, td {
     <td>
       {{ $value.Name }} (<b>{{ $value.Username }}</b>)
       <br/>
-      <a href="https://wiki.hacklab.to{{ $value.Picture.String }}">
-        <img src="https://wiki.hacklab.to{{ $value.PictureThumb.String }}" />
+      <a href="{{ $value.Picture.String }}">
+        <img src="{{ $value.PictureThumb.String }}" />
       </a>
       <br/>
       {{ $value.JoinDate.String }}

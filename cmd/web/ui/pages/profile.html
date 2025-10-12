@@ -15,8 +15,8 @@ Fields are parsed as HTML (for now).
 <br /><br />
 
 <div class="flex items-center p-4">
-  <a href="https://wiki.hacklab.to{{ .Data.Picture.String }}" class="mr-4">
-    <img src="https://wiki.hacklab.to{{ .Data.PictureThumb.String }}" />
+  <a href="{{ .Data.Picture.String }}" class="mr-4">
+    <img src="{{ .Data.PictureThumb.String }}" />
   </a>
   <p>
     {{ .Data.Name }} ({{ .Data.Username }})
