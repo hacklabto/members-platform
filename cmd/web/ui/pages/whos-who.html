@@ -31,7 +31,7 @@ tr, td {
     <td>
       {{ $value.Name }} (<b>{{ $value.Username }}</b>)
       <br/>
-      <a href="{{ $value.Picture.String }}">
+      <a href="{{ $value.Picture.String }}" hx-disable>
         <img src="{{ $value.PictureThumb.String }}" />
       </a>
       <br/>
@@ -72,7 +72,7 @@ tr, td {
     <td>
       {{ $value.Name }} (<b>{{ $value.Username }}</b>)
       <br/>
-      <a href="{{ $value.Picture.String }}">
+      <a href="{{ $value.Picture.String }}" hx-disable>
         <img src="{{ $value.PictureThumb.String }}" />
       </a>
       <br/>

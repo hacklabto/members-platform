@@ -13,6 +13,7 @@ import (
 	"members-platform/internal/mailer"
 	"members-platform/static"
 	"net/http"
+	"net/http/httputil"
 	"net/mail"
 	"os"
 	"strings"
@@ -28,6 +29,22 @@ func Router() chi.Router {
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 	r.Use(auth.AuthenticateHTTP)
+
+	wiki := &httputil.ReverseProxy{
+		Rewrite: func (r *httputil.ProxyRequest) {
+			url := r.In.URL
+			url.Host = "wiki.hacklab.to"
+			url.Scheme = "https"
+			url.Path, _ = strings.CutPrefix(url.Path, "/w")
+			r.SetURL(url)
+			// ???
+			r.Out.URL.Path, _ = strings.CutPrefix(url.Path, "/w")
+			cookie, _ := r.In.Cookie("HL-Session")
+			r.Out.Header.Set("Authorization", cookie.Value)
+		},
+	}
+
+	r.Get("/w/images/*", wiki.ServeHTTP)
 
 	// contact form
 	r.Post("/wp-json/contact-form-7/v1/contact-forms/844/feedback", func(rw http.ResponseWriter, r *http.Request) {

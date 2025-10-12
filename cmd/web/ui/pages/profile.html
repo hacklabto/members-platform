@@ -9,7 +9,7 @@
 <p>
 The information below is shown on the <a href="/whos-who/">Who's Who</a> page. Some is freely editable, but please contact Operations if you would like to change your name, username, or picture.
 <br />
-Fields are parsed as HTML (for now).
+Fields are parsed as HTML (for now). CSS/JavaScript are not allowed.
 </p>
 
 <br /><br />
@@ -28,23 +28,23 @@ Fields are parsed as HTML (for now).
 
 <form action="#" method="POST">
   <div class="sm:col-span-2">
-    <label for="refer_to" class="block text-sm/6 font-semibold text-white">Nickname / preferred pronouns / etc</label>
+    <label for="refer_to" class="block text-sm/6 font-semibold dark:text-white">Nickname / preferred pronouns / etc</label>
     <div class="mt-2.5">
-      <textarea id="refer_to" name="refer_to" rows="4" class="block w-full rounded-md bg-white/5 px-3.5 py-2 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500">{{ .Data.ReferTo.String }}</textarea>
+      <textarea id="refer_to" name="refer_to" rows="4" class="block w-full rounded-md bg-gray-200 dark:bg-gray-700 px-3.5 py-2 text-base dark:text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500">{{ .Data.ReferTo.String }}</textarea>
     </div>
   </div>
   <br />
   <div class="sm:col-span-2">
-    <label for="contact" class="block text-sm/6 font-semibold text-white">Contact Info</label>
+    <label for="contact" class="block text-sm/6 font-semibold dark:text-white">Contact Info</label>
     <div class="mt-2.5">
-      <textarea id="contact" name="contact" rows="4" class="block w-full rounded-md bg-white/5 px-3.5 py-2 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500">{{ .Data.ContactInfo.String }}</textarea>
+      <textarea id="contact" name="contact" rows="4" class="block w-full rounded-md bg-gray-200 dark:bg-gray-700 px-3.5 py-2 text-base dark:text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500">{{ .Data.ContactInfo.String }}</textarea>
     </div>
   </div>
   <br />
   <div class="sm:col-span-2">
-    <label for="interests" class="block text-sm/6 font-semibold text-white">Interests</label>
+    <label for="interests" class="block text-sm/6 font-semibold dark:text-white">Interests</label>
     <div class="mt-2.5">
-      <textarea id="interests" name="interests" rows="4" class="block w-full rounded-md bg-white/5 px-3.5 py-2 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500">{{ .Data.Interests.String }}</textarea>
+      <textarea id="interests" name="interests" rows="4" class="block w-full rounded-md bg-gray-200 dark:bg-gray-700 px-3.5 py-2 text-base dark:text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500">{{ .Data.Interests.String }}</textarea>
     </div>
   </div>
   <br />
