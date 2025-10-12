@@ -18,9 +18,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/adtac/go-akismet/akismet"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"github.com/adtac/go-akismet/akismet"
 )
 
 func Router() chi.Router {
@@ -32,10 +32,10 @@ func Router() chi.Router {
 	// contact form
 	r.Post("/wp-json/contact-form-7/v1/contact-forms/844/feedback", func(rw http.ResponseWriter, r *http.Request) {
 		email := mailer.ContactFormData{
-			UserName: r.FormValue("your-name"),
+			UserName:  r.FormValue("your-name"),
 			UserEmail: r.FormValue("your-email"),
-			Subject: r.FormValue("your-subject"),
-			Message: r.FormValue("your-message"),
+			Subject:   r.FormValue("your-subject"),
+			Message:   r.FormValue("your-message"),
 
 			Border: "#ffb900",
 		}
@@ -67,13 +67,13 @@ func Router() chi.Router {
 			// is a pain to get the source ip since http is forwarded from the old vps
 			// but that's a problem for later
 			isSpam, err := akismet.Check(&akismet.Comment{
-				Blog: "https://hacklab.to",
-				UserIP: "8.8.8.8",
-				UserAgent: "...",
-				CommentType: "contact-form",
-				CommentAuthor: email.UserName,
+				Blog:               "https://hacklab.to",
+				UserIP:             "8.8.8.8",
+				UserAgent:          "...",
+				CommentType:        "contact-form",
+				CommentAuthor:      email.UserName,
 				CommentAuthorEmail: email.UserEmail,
-				CommentContent: email.Message,
+				CommentContent:     email.Message,
 			}, akismetKey)
 
 			if err != nil {
@@ -182,24 +182,24 @@ func Router() chi.Router {
 		}
 
 		if v, ok := r.Form["contact"]; ok && len(v) == 1 {
-			contact= v[0]
+			contact = v[0]
 		} else {
 			rw.Write([]byte("error parsing form: contact is missing or invalid"))
 			return
 		}
 
 		if v, ok := r.Form["interests"]; ok && len(v) == 1 {
-			interests= v[0]
+			interests = v[0]
 		} else {
 			rw.Write([]byte("error parsing form: interests is missing or invalid"))
 			return
 		}
 
 		if err := db.DB.UpdateProfile(r.Context(), queries.UpdateProfileParams{
-			Username: u,
-			ReferTo: sql.NullString{String: refer_to, Valid: true},
+			Username:    u,
+			ReferTo:     sql.NullString{String: refer_to, Valid: true},
 			ContactInfo: sql.NullString{String: contact, Valid: true},
-			Interests: sql.NullString{String: interests, Valid: true},
+			Interests:   sql.NullString{String: interests, Valid: true},
 		}); err != nil {
 			rw.Write([]byte("error parsing form: interests is missing or invalid"))
 			return
@@ -208,42 +208,42 @@ func Router() chi.Router {
 		rw.Header().Set("hx-refresh", "true")
 	})
 
-	r.Post("/api/memberizer", func (rw http.ResponseWriter, r *http.Request) {
+	r.Post("/api/memberizer", func(rw http.ResponseWriter, r *http.Request) {
 		checkPassword := os.Getenv("MEMBERIZER_PASSWORD")
 		if checkPassword == "" {
 			rw.Write([]byte("webserver is misconfigured"))
 			return
 		}
 
-	    err := r.ParseMultipartForm(10000)
-	    if err != nil {
-	    	rw.Write([]byte(fmt.Sprintf("failed to parse form: %w", err)))
-	        return
-	    }
+		err := r.ParseMultipartForm(10000)
+		if err != nil {
+			rw.Write([]byte(fmt.Sprintf("failed to parse form: %w", err)))
+			return
+		}
 
-        password := r.FormValue("password")
-        if subtle.ConstantTimeCompare([]byte(checkPassword), []byte(password)) == 0 {
-        	rw.Write([]byte("auth failed"))
-        	return
-        }
+		password := r.FormValue("password")
+		if subtle.ConstantTimeCompare([]byte(checkPassword), []byte(password)) == 0 {
+			rw.Write([]byte("auth failed"))
+			return
+		}
 
-	    fullname := r.FormValue("fullname")
-	    username := r.FormValue("username")
-	    email := r.FormValue("email")
-	    photo := r.FormValue("photo")
-	    website := r.FormValue("website")
+		fullname := r.FormValue("fullname")
+		username := r.FormValue("username")
+		email := r.FormValue("email")
+		photo := r.FormValue("photo")
+		website := r.FormValue("website")
 
-	    if err := db.DB.Memberize(r.Context(), queries.MemberizeParams{
-	    	Username: username,
-	    	Name: fullname,
-	    	Picture: sql.NullString{String: photo, Valid: true},
-	    	PictureThumb: sql.NullString{String: photo, Valid: true}, // todo
-	    	JoinDate: sql.NullString{String: time.Now().Format("2017-09-07"), Valid: true},
-	    	ContactInfo: sql.NullString{String: fmt.Sprintf("%s<br />%s", email, website), Valid: true},
-	    }); err != nil {
-	    	rw.Write([]byte(fmt.Sprintf("failed to add to members db: %w", err)))
-	    	return
-	    }
+		if err := db.DB.Memberize(r.Context(), queries.MemberizeParams{
+			Username:     username,
+			Name:         fullname,
+			Picture:      sql.NullString{String: photo, Valid: true},
+			PictureThumb: sql.NullString{String: photo, Valid: true}, // todo
+			JoinDate:     sql.NullString{String: time.Now().Format("2017-09-07"), Valid: true},
+			ContactInfo:  sql.NullString{String: fmt.Sprintf("%s<br />%s", email, website), Valid: true},
+		}); err != nil {
+			rw.Write([]byte(fmt.Sprintf("failed to add to members db: %w", err)))
+			return
+		}
 
 		rw.Write([]byte("added!"))
 	})
