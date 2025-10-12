@@ -74,6 +74,34 @@ func (q *Queries) GetMembers(ctx context.Context) ([]Member, error) {
 	return items, nil
 }
 
+const memberize = `-- name: Memberize :exec
+insert into members
+(username, name, picture, picture_thumb, join_date, contact_info)
+values
+($1, $2, $3, $4, $5, $6)
+`
+
+type MemberizeParams struct {
+	Username     string
+	Name         string
+	Picture      sql.NullString
+	PictureThumb sql.NullString
+	JoinDate     sql.NullString
+	ContactInfo  sql.NullString
+}
+
+func (q *Queries) Memberize(ctx context.Context, arg MemberizeParams) error {
+	_, err := q.db.ExecContext(ctx, memberize,
+		arg.Username,
+		arg.Name,
+		arg.Picture,
+		arg.PictureThumb,
+		arg.JoinDate,
+		arg.ContactInfo,
+	)
+	return err
+}
+
 const updateProfile = `-- name: UpdateProfile :exec
 update members set refer_to = $1, contact_info = $2, interests = $3 where username = $4
 `

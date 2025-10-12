@@ -2,6 +2,7 @@ package ui
 
 import (
 	"context"
+	"crypto/subtle"
 	"database/sql"
 	"encoding/base64"
 	"fmt"
@@ -205,6 +206,46 @@ func Router() chi.Router {
 		}
 
 		rw.Header().Set("hx-refresh", "true")
+	})
+
+	r.Post("/api/memberizer", func (rw http.ResponseWriter, r *http.Request) {
+		checkPassword := os.Getenv("MEMBERIZER_PASSWORD")
+		if checkPassword == "" {
+			rw.Write([]byte("webserver is misconfigured"))
+			return
+		}
+
+	    err := r.ParseMultipartForm(10000)
+	    if err != nil {
+	    	rw.Write([]byte(fmt.Sprintf("failed to parse form: %w", err)))
+	        return
+	    }
+
+        password := r.FormValue("password")
+        if subtle.ConstantTimeCompare([]byte(checkPassword), []byte(password)) == 0 {
+        	rw.Write([]byte("auth failed"))
+        	return
+        }
+
+	    fullname := r.FormValue("fullname")
+	    username := r.FormValue("username")
+	    email := r.FormValue("email")
+	    photo := r.FormValue("photo")
+	    website := r.FormValue("website")
+
+	    if err := db.DB.Memberize(r.Context(), queries.MemberizeParams{
+	    	Username: username,
+	    	Name: fullname,
+	    	Picture: sql.NullString{String: photo, Valid: true},
+	    	PictureThumb: sql.NullString{String: photo, Valid: true}, // todo
+	    	JoinDate: sql.NullString{String: time.Now().Format("2017-09-07"), Valid: true},
+	    	ContactInfo: sql.NullString{String: fmt.Sprintf("%s<br />%s", email, website), Valid: true},
+	    }); err != nil {
+	    	rw.Write([]byte(fmt.Sprintf("failed to add to members db: %w", err)))
+	    	return
+	    }
+
+		rw.Write([]byte("added!"))
 	})
 
 	// todo: this needs to be POST with CSRF
