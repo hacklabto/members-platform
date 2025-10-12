@@ -10,6 +10,8 @@ import (
 	"members-platform/internal/auth"
 	"strconv"
 	"time"
+
+	"github.com/microcosm-cc/bluemonday"
 )
 
 //go:embed */*.html
@@ -35,6 +37,11 @@ var funcs template.FuncMap = map[string]any{
 	},
 	"IsMemberLoggedIn": func(a auth.AuthLevel) bool {
 		return a >= auth.AuthLevel_Member
+	},
+
+	// misc
+	"SanitizedHtml": func(html string) template.HTML {
+		return template.HTML(bluemonday.UGCPolicy().Sanitize(html))
 	},
 }
 
