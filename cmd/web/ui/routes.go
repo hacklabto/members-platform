@@ -232,7 +232,7 @@ func Router() chi.Router {
 			return
 		}
 
-		err := r.ParseMultipartForm(10000)
+		err := r.ParseForm()
 		if err != nil {
 			rw.Write([]byte(fmt.Sprintf("failed to parse form: %w", err)))
 			return
