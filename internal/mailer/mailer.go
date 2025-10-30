@@ -1,9 +1,12 @@
 package mailer
 
 import (
+	"crypto/tls"
 	"fmt"
+	"log"
 	"net/smtp"
 	"os"
+	"strings"
 )
 
 func DoSendEmail(email, content string) error {
@@ -21,6 +24,22 @@ func DoSendEmailInner(src, email, content string) error {
 		return fmt.Errorf("dial smtp: %w", err)
 	}
 	defer conn.Close()
+
+	if hello := os.Getenv("SMTP_HELLO"); hello != "" {
+		log.Printf("sending hello: %v\n", hello)
+		if err := conn.Hello(hello); err != nil {
+			return fmt.Errorf("conn.Hello: %w", err)
+		}
+	}
+
+	if os.Getenv("SMTP_USE_STARTTLS") == "true" {
+		log.Printf("starting tls\n")
+		if err := conn.StartTLS(&tls.Config{
+			ServerName: strings.Split(smtpServer, ":")[0],
+		}); err != nil {
+			return fmt.Errorf("conn.StartTLS: %w", err)
+		}
+	}
 
 	if err := conn.Mail(src); err != nil {
 		return fmt.Errorf("conn.Mail: %w", err)
