@@ -147,6 +147,7 @@ func Router() chi.Router {
 	registerStaticRoutes(r)
 	registerStaticPages(r)
 	registerPasswdRoutes(r)
+	registerApplyRoutes(r)
 
 	r.Get("/whos-who/", func(rw http.ResponseWriter, r *http.Request) {
 		var members []queries.Member
@@ -177,13 +178,18 @@ func Router() chi.Router {
 	})
 
 	r.Post("/profile/", func(rw http.ResponseWriter, r *http.Request) {
+		level := r.Context().Value(auth.Ctx__AuthLevel).(auth.AuthLevel)
+		if level < auth.AuthLevel_Member {
+			return
+		}
+
 		u := r.Context().Value(auth.Ctx__AuthenticatedUser).(string)
 		if u == "" {
 			return
 		}
 
 		if err := r.ParseForm(); err != nil {
-			rw.Write([]byte(fmt.Sprintf("error parsing form: %w", err)))
+			rw.Write([]byte(fmt.Sprintf("error parsing form: %v", err)))
 			return
 		}
 
@@ -234,7 +240,7 @@ func Router() chi.Router {
 
 		err := r.ParseForm()
 		if err != nil {
-			rw.Write([]byte(fmt.Sprintf("failed to parse form: %w", err)))
+			rw.Write([]byte(fmt.Sprintf("failed to parse form: %v", err)))
 			return
 		}
 
@@ -258,7 +264,7 @@ func Router() chi.Router {
 			JoinDate:     sql.NullString{String: time.Now().Format("2017-09-07"), Valid: true},
 			ContactInfo:  sql.NullString{String: fmt.Sprintf("%s<br />%s", email, website), Valid: true},
 		}); err != nil {
-			rw.Write([]byte(fmt.Sprintf("failed to add to members db: %w", err)))
+			rw.Write([]byte(fmt.Sprintf("failed to add to members db: %v", err)))
 			return
 		}
 
@@ -277,8 +283,14 @@ func Router() chi.Router {
 	})
 
 	r.Post("/login/", func(rw http.ResponseWriter, r *http.Request) {
+		level := r.Context().Value(auth.Ctx__AuthLevel).(auth.AuthLevel)
+		if level > auth.AuthLevel_LoggedOut {
+			return
+		}
+
 		if err := r.ParseForm(); err != nil {
 			log.Println(err)
+			return
 		}
 		username := r.Form.Get("username")
 		password := r.Form.Get("password")
@@ -325,9 +337,9 @@ func registerStaticRoutes(r chi.Router) {
 
 func registerStaticPages(r chi.Router) {
 	pathPages := map[string]string{
-		"/":       "index",
-		"/login/": "login",
-		"/apply/": "apply",
+		"/":               "index",
+		"/login/":         "login",
+		"/apply/success/": "apply-success",
 	}
 
 	for k, v := range pathPages {

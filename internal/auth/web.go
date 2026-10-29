@@ -2,10 +2,12 @@ package auth
 
 import (
 	"context"
+	"crypto/subtle"
 	"encoding/base64"
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 )
 
@@ -55,6 +57,22 @@ func AuthenticateHTTP(next http.Handler) http.Handler {
 			// unauthenticated request or malformed credentials
 			r = r.WithContext(context.WithValue(r.Context(), Ctx__AuthenticatedUser, ""))
 			r = r.WithContext(context.WithValue(r.Context(), Ctx__AuthLevel, AuthLevel_LoggedOut))
+			next.ServeHTTP(rw, r)
+			return
+		}
+
+		if username == "applicant" {
+			checkPassword := os.Getenv("APPLICANT_PASSWORD")
+			if checkPassword == "" {
+				rw.Write([]byte("webserver is misconfigured"))
+				return
+			}
+			if subtle.ConstantTimeCompare([]byte(checkPassword), []byte(password)) == 0 {
+				rw.Write([]byte("auth failed"))
+				return
+			}
+			r = r.WithContext(context.WithValue(r.Context(), Ctx__AuthenticatedUser, "applicant"))
+			r = r.WithContext(context.WithValue(r.Context(), Ctx__AuthLevel, AuthLevel_Applicant))
 			next.ServeHTTP(rw, r)
 			return
 		}

@@ -1,26 +1,39 @@
-todo: fix
-Prospective hacklab member {{ .PreferredName }} ({{ .Nickname }}) has applied!
+From: Applications <applications@hacklab.to>
+Reply-To: applications@hacklab.to
+To: {{ .ToAddresses }}
+Subject: {{ .Name }} ({{ .Nickname }}) has applied!
+
+Prospective hacklab member {{ .Name }} ({{ .Nickname }}) has applied!
 
 Full application details below:
 
 -----------------------
 
-Name: {{ .PreferredName }} ({{ .Nickname }})
-Username: {{ .Username }}
+Name: {{ .Name }}
+Nickname: {{ .Nickname }}
 Email: {{ .ContactEmail }}
+Website: {{ if .Website }}{{ .Website }}{{ else }}None provided.{{ end }}
 
-Profile: {{ .PictureUrl }}
+Profile: {{ if .ProfileURL }}{{ .ProfileURL }}{{ else }}None provided.{{ end }}
 
-Sponsors: {{ .Sponsor1 }}, {{ .Sponsor2 }}
+Sponsors: {{ .Sponsor }}, {{ .SecondSponsor }}
 
-Links:
-{{ if .Links }}{{ .Links }}{{ else }}None provided.{{ end }}
-
+Social Media:
+{{ if .Twitter }}- Twitter: {{ .Twitter }}
+{{ end }}{{ if .Facebook }}- Facebook: {{ .Facebook }}
+{{ end }}
 Bio / Why they want to join:
-{{ .ApplicationReason }}
+{{ .BioReason }}
 
 How'd they hear about us:
 {{ if .HeardFrom }}{{ .HeardFrom }}{{ else }}None provided.{{ end }}
 
 Preferred gender pronoun:
-{{ .PreferredPronouns }}
+{{ .PreferredGenderPronoun }}
+
+--------------
+
+Membership process will halt with two -1's. Please send any -1's privately to board@hacklab.to
+
+Further details of process:
+https://wiki.hacklab.to/Joining_HackLab#Application_Process

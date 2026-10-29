@@ -5,7 +5,6 @@ RUN apk add go
 WORKDIR /build
 COPY . .
 RUN go build -o hl-web ./cmd/web
-# RUN go build -o hl-apply ./cmd/apply
 # RUN go build -o hl-memberizer ./cmd/memberizer
 
 FROM alpine:latest

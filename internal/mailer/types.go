@@ -15,3 +15,20 @@ type ContactFormData struct {
 	Error  string
 	Border string
 }
+
+type NewApplicantData struct {
+	ToAddresses string
+
+	Name                   string
+	Nickname               string
+	ContactEmail           string
+	Website                string
+	ProfileURL             string
+	Sponsor                string
+	SecondSponsor          string
+	Twitter                string
+	Facebook               string
+	BioReason              string
+	HeardFrom              string
+	PreferredGenderPronoun string
+}

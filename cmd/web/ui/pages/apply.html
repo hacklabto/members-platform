@@ -1,2 +1,205 @@
-<!-- todo: ask for APPLY_PASSWORD env variable, add to session -->
-<p>TODO: put form here</p>
+{{ define "apply-field-error" }}{{ if . }}<p class="mt-1 text-sm text-red-500">{{ . }}</p>{{ end }}{{ end }}
+{{ if IsApplicantLoggedIn .Ctx.AuthLevel }}
+{{ $v := .Data.Values }}
+{{ $e := .Data.FieldErrors }}
+<form class="w-full max-w-3xl mx-auto" action="/apply/" method="post" enctype="multipart/form-data" hx-boost="false" novalidate>
+	<input type="hidden" name="action" value="submit" />
+	<h2 class="text-2xl font-bold">Membership Application</h2>
+	<br />
+	{{ if .Data.Error }}
+	<p class="mb-4 p-3 rounded bg-red-100 text-red-700">{{ .Data.Error }}</p>
+	{{ end }}
+	<p class="mb-6 p-3 rounded bg-yellow-100 text-yellow-800">Fields marked with an asterisk are required</p>
+
+	<div class="grid gap-4 sm:grid-cols-2">
+		<div>
+			<label class="block text-sm/6 font-semibold mb-1" for="id_name">Real Name *</label>
+			<input class="block w-full rounded-md bg-gray-200 dark:bg-gray-700 px-3.5 py-2 text-base dark:text-white placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500" id="id_name" type="text" name="name" placeholder="Alex Smith" value="{{ $v.name }}" />
+			{{ template "apply-field-error" $e.name }}
+		</div>
+		<div>
+			<label class="block text-sm/6 font-semibold mb-1" for="id_contact_email">Contact Email address *</label>
+			<input class="block w-full rounded-md bg-gray-200 dark:bg-gray-700 px-3.5 py-2 text-base dark:text-white placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500" id="id_contact_email" type="email" name="contact_email" placeholder="foobar@example.com" value="{{ $v.contact_email }}" />
+			{{ template "apply-field-error" $e.contact_email }}
+		</div>
+		<div>
+			<label class="block text-sm/6 font-semibold mb-1" for="id_username">Username *</label>
+			<input class="block w-full rounded-md bg-gray-200 dark:bg-gray-700 px-3.5 py-2 text-base dark:text-white placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500" id="id_username" type="text" name="username" placeholder="asmith" value="{{ $v.username }}" />
+			{{ template "apply-field-error" $e.username }}
+		</div>
+		<div>
+			<label class="block text-sm/6 font-semibold mb-1" for="id_list_email">Mailing List Email address *</label>
+			<input class="block w-full rounded-md bg-gray-200 dark:bg-gray-700 px-3.5 py-2 text-base dark:text-white placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500" id="id_list_email" type="email" name="list_email" placeholder="foobar+hacklab@example.com" value="{{ $v.list_email }}" />
+			{{ template "apply-field-error" $e.list_email }}
+		</div>
+		<div>
+			<label class="block text-sm/6 font-semibold mb-1" for="id_nickname">Nickname (used for door announcements, etc.) *</label>
+			<input class="block w-full rounded-md bg-gray-200 dark:bg-gray-700 px-3.5 py-2 text-base dark:text-white placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500" id="id_nickname" type="text" name="nickname" placeholder="Alex" value="{{ $v.nickname }}" />
+			{{ template "apply-field-error" $e.nickname }}
+		</div>
+	</div>
+
+	<div class="mt-4">
+		<label class="block text-sm/6 font-semibold mb-1" for="id_bio_reason">Why do you want to join Hacklab? *</label>
+		<textarea class="block w-full rounded-md bg-gray-200 dark:bg-gray-700 px-3.5 py-2 text-base dark:text-white placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500" id="id_bio_reason" name="bio_reason" rows="4" placeholder="Enter a few sentences about yourself and why you want to join Hacklab.TO">{{ $v.bio_reason }}</textarea>
+		{{ template "apply-field-error" $e.bio_reason }}
+	</div>
+
+	<div class="grid gap-4 sm:grid-cols-2 mt-4">
+		<div>
+			<label class="block text-sm/6 font-semibold mb-1" for="id_sponsor">Name of sponsoring member</label>
+			<input class="block w-full rounded-md bg-gray-200 dark:bg-gray-700 px-3.5 py-2 text-base dark:text-white placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500" id="id_sponsor" type="text" name="sponsor" placeholder="None" value="{{ $v.sponsor }}" />
+			{{ template "apply-field-error" $e.sponsor }}
+		</div>
+		<div>
+			<label class="block text-sm/6 font-semibold mb-1" for="id_second_sponsor">Seconding member?</label>
+			<input class="block w-full rounded-md bg-gray-200 dark:bg-gray-700 px-3.5 py-2 text-base dark:text-white placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500" id="id_second_sponsor" type="text" name="second_sponsor" placeholder="None" value="{{ $v.second_sponsor }}" />
+			{{ template "apply-field-error" $e.second_sponsor }}
+		</div>
+	</div>
+
+	<div class="grid gap-4 sm:grid-cols-3 mt-4">
+		<div class="sm:col-span-2">
+			<p class="mb-4 p-3 rounded bg-blue-100 text-blue-800">Provide either a photo URL or upload one from your computer</p>
+			<div class="mb-4">
+				<label class="block text-sm/6 font-semibold mb-1" for="id_face_url">Bio Picture (URL) *</label>
+				<input class="block w-full rounded-md bg-gray-200 dark:bg-gray-700 px-3.5 py-2 text-base dark:text-white placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500" id="id_face_url" type="url" name="face_url" placeholder="http://www.example.com/my-face.jpg" value="{{ $v.face_url }}" />
+				{{ template "apply-field-error" $e.face_url }}
+			</div>
+			<div>
+				<label class="block text-sm/6 font-semibold mb-1" for="id_face_file">Bio Picture (Upload) *</label>
+				<input id="id_face_file" type="file" name="face_file" accept="image/gif,image/jpeg,image/png,image/bmp" />
+				{{ template "apply-field-error" $e.face_file }}
+			</div>
+		</div>
+		<div>
+			<img id="apply-face-image" class="rounded max-w-full" src="/static/apply/faceless.png" alt="" />
+		</div>
+	</div>
+
+	<fieldset class="mt-4">
+		<legend class="block text-sm/6 font-semibold mb-1">Preferred Access Token Type</legend>
+		<label class="mr-4"><input type="radio" name="token_type" value="fob" {{ if eq $v.token_type "fob" }}checked{{ end }} /> Key Fob</label>
+		<label><input type="radio" name="token_type" value="card" {{ if eq $v.token_type "card" }}checked{{ end }} /> Card</label>
+		{{ template "apply-field-error" $e.token_type }}
+	</fieldset>
+
+	<h3 class="text-xl font-bold mt-8 mb-4 pb-2 border-b border-gray-200 dark:border-gray-700">Optional Info</h3>
+
+	<div class="grid gap-4 sm:grid-cols-2">
+		<div>
+			<label class="block text-sm/6 font-semibold mb-1" for="id_twitter">Twitter</label>
+			<input class="block w-full rounded-md bg-gray-200 dark:bg-gray-700 px-3.5 py-2 text-base dark:text-white placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500" id="id_twitter" type="text" name="twitter" placeholder="@username" value="{{ $v.twitter }}" />
+			{{ template "apply-field-error" $e.twitter }}
+		</div>
+		<div>
+			<label class="block text-sm/6 font-semibold mb-1" for="id_facebook">Facebook</label>
+			<input class="block w-full rounded-md bg-gray-200 dark:bg-gray-700 px-3.5 py-2 text-base dark:text-white placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500" id="id_facebook" type="url" name="facebook" placeholder="http://www.facebook.com/your.name" value="{{ $v.facebook }}" />
+			{{ template "apply-field-error" $e.facebook }}
+		</div>
+		<div>
+			<label class="block text-sm/6 font-semibold mb-1" for="id_website">Your Website</label>
+			<input class="block w-full rounded-md bg-gray-200 dark:bg-gray-700 px-3.5 py-2 text-base dark:text-white placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500" id="id_website" type="url" name="website" placeholder="http://www.example.com/" value="{{ $v.website }}" />
+			{{ template "apply-field-error" $e.website }}
+		</div>
+		<div>
+			<label class="block text-sm/6 font-semibold mb-1" for="id_preferred_gender_pronoun">Preferred Gender Pronoun</label>
+			<input class="block w-full rounded-md bg-gray-200 dark:bg-gray-700 px-3.5 py-2 text-base dark:text-white placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500" id="id_preferred_gender_pronoun" type="text" name="preferred_gender_pronoun" value="{{ $v.preferred_gender_pronoun }}" />
+			{{ template "apply-field-error" $e.preferred_gender_pronoun }}
+		</div>
+	</div>
+
+	<div class="mt-4">
+		<label class="block text-sm/6 font-semibold mb-1" for="id_heard_from">How'd you hear about us?</label>
+		<textarea class="block w-full rounded-md bg-gray-200 dark:bg-gray-700 px-3.5 py-2 text-base dark:text-white placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500" id="id_heard_from" name="heard_from" rows="3" placeholder="Someone just down the street">{{ $v.heard_from }}</textarea>
+		{{ template "apply-field-error" $e.heard_from }}
+	</div>
+
+	<button class="mt-6 w-full shadow bg-green-600 hover:bg-green-500 focus:shadow-outline focus:outline-none text-white text-lg font-bold py-3 px-4 rounded" type="submit">
+		Submit Application
+	</button>
+</form>
+<script>
+(function () {
+	// ported from the old apply app's main.js
+	var disableCopying = false;
+	var $ = function (id) { return document.getElementById(id); };
+	var face = $("apply-face-image");
+
+	var previewFace = function (e) {
+		var input = e.target;
+		// paste event fires before value is populated
+		setTimeout(function () {
+			if (input.value && input.checkValidity()) {
+				var img = new Image();
+				img.onload = function () { face.src = input.value; };
+				img.onerror = function () { face.src = "/static/apply/broken.png"; };
+				img.src = input.value;
+			} else {
+				face.src = "/static/apply/faceless.png";
+			}
+		}, 100);
+	};
+	$("id_face_url").addEventListener("paste", previewFace);
+	$("id_face_url").addEventListener("change", previewFace);
+
+	var duplicateEmail = function (e) {
+		if (!disableCopying) $("id_list_email").value = e.target.value;
+	};
+	var duplicateUsername = function (e) {
+		if (!disableCopying) $("id_nickname").value = e.target.value;
+	};
+	$("id_contact_email").addEventListener("paste", duplicateEmail);
+	$("id_contact_email").addEventListener("keyup", duplicateEmail);
+	$("id_username").addEventListener("paste", duplicateUsername);
+	$("id_username").addEventListener("keyup", duplicateUsername);
+
+	$("id_list_email").addEventListener("change", function (e) {
+		disableCopying = e.target.value !== "";
+	});
+
+	$("id_twitter").addEventListener("change", function (e) {
+		if (e.target.value[0] !== "@") e.target.value = "@" + e.target.value;
+	});
+
+	$("id_face_file").addEventListener("change", function () {
+		if (this.files && this.files[0]) {
+			var reader = new FileReader();
+			reader.onload = function (e) { face.src = e.target.result; };
+			reader.readAsDataURL(this.files[0]);
+		}
+	});
+})();
+</script>
+{{ else if IsMemberLoggedIn .Ctx.AuthLevel }}
+you're already a member!
+{{ else }}
+<form class="w-full" hx-post="/apply/" method="post">
+	<input type="hidden" name="action" value="login" />
+	<h2 class="text-2xl font-bold">Become a member!</h2>
+	<br />
+	<span class="text-xl">So you got a tour of the lab and want to join us? Fantastic! Click the button below to get started.</span>
+	<br />
+	<br />
+	<div class="md:flex md:items-center mb-6 max-w-sm">
+		<div class="md:w-1/3">
+			<label class="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4" for="inline-password">
+				Password
+			</label>
+		</div>
+		<div class="md:w-2/3">
+			<input class="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white" id="inline-password" type="password" name="password" placeholder="Enter the password to apply">
+		</div>
+	</div>
+	<div class="md:w-2/3">
+		<button class="shadow bg-blue-500 hover:bg-blue-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded" type="submit">
+			Memberize me!
+		</button>
+	</div>
+	{{ if .Data }}
+	{{ if .Data.Error }}
+	<p class="text-red-500">Error: {{ .Data.Error }}</p>
+	{{ end }}
+	{{ end }}
+</form>
+{{ end }}

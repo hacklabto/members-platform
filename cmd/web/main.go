@@ -6,6 +6,7 @@ import (
 	"members-platform/cmd/web/ui"
 	"members-platform/internal/db"
 	"net/http"
+	"os"
 )
 
 func main() {
@@ -17,11 +18,17 @@ func main() {
 	if err := db.ConnectPG(true); err != nil {
 		log.Fatalln(err)
 	}
+	if err := db.ConnectApplyMySQL(); err != nil {
+		log.Fatalln(err)
+	}
 	if err := db.ConnectRedis(); err != nil {
 		log.Fatalln(err)
 	}
 
 	port := ":18884"
+	if p := os.Getenv("PORT"); p != "" {
+		port = ":" + p
+	}
 	log.Println("starting web server at", port)
 	http.ListenAndServe(port, r)
 }

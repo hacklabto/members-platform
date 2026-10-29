@@ -14,6 +14,10 @@ func DoSendEmail(email, content string) error {
 }
 
 func DoSendEmailInner(src, email, content string) error {
+	return DoSendEmailToMany(src, []string{email}, content)
+}
+
+func DoSendEmailToMany(src string, emails []string, content string) error {
 	smtpServer := os.Getenv("SMTP_URL")
 	if smtpServer == "" {
 		return fmt.Errorf("missing SMTP_URL in environment")
@@ -45,8 +49,10 @@ func DoSendEmailInner(src, email, content string) error {
 		return fmt.Errorf("conn.Mail: %w", err)
 	}
 
-	if err := conn.Rcpt(email); err != nil {
-		return fmt.Errorf("conn.Rcpt: %w", err)
+	for _, email := range emails {
+		if err := conn.Rcpt(email); err != nil {
+			return fmt.Errorf("conn.Rcpt: %w", err)
+		}
 	}
 
 	wc, err := conn.Data()
