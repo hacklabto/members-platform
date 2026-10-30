@@ -187,6 +187,8 @@ func handleApplication(rw http.ResponseWriter, r *http.Request, form ApplyForm) 
 		validEmail("list_email")
 	}
 	notBlank("bio_reason")
+	notBlank("sponsor")
+	notBlank("second_sponsor")
 	validURL("face_url")
 	validURL("facebook")
 	validURL("website")

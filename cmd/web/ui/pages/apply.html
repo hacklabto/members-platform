@@ -18,6 +18,11 @@
 			{{ template "apply-field-error" $e.name }}
 		</div>
 		<div>
+			<label class="block text-sm/6 font-semibold mb-1" for="id_preferred_gender_pronoun">Preferred Gender Pronoun</label>
+			<input class="block w-full rounded-md bg-gray-200 dark:bg-gray-700 px-3.5 py-2 text-base dark:text-white placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500" id="id_preferred_gender_pronoun" type="text" name="preferred_gender_pronoun" value="{{ $v.preferred_gender_pronoun }}" />
+			{{ template "apply-field-error" $e.preferred_gender_pronoun }}
+		</div>
+		<div>
 			<label class="block text-sm/6 font-semibold mb-1" for="id_contact_email">Contact Email address *</label>
 			<input class="block w-full rounded-md bg-gray-200 dark:bg-gray-700 px-3.5 py-2 text-base dark:text-white placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500" id="id_contact_email" type="email" name="contact_email" placeholder="foobar@example.com" value="{{ $v.contact_email }}" />
 			{{ template "apply-field-error" $e.contact_email }}
@@ -52,7 +57,7 @@
 			{{ template "apply-field-error" $e.sponsor }}
 		</div>
 		<div>
-			<label class="block text-sm/6 font-semibold mb-1" for="id_second_sponsor">Seconding member?</label>
+			<label class="block text-sm/6 font-semibold mb-1" for="id_second_sponsor">Seconding member</label>
 			<input class="block w-full rounded-md bg-gray-200 dark:bg-gray-700 px-3.5 py-2 text-base dark:text-white placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500" id="id_second_sponsor" type="text" name="second_sponsor" placeholder="None" value="{{ $v.second_sponsor }}" />
 			{{ template "apply-field-error" $e.second_sponsor }}
 		</div>
@@ -101,11 +106,6 @@
 			<label class="block text-sm/6 font-semibold mb-1" for="id_website">Your Website</label>
 			<input class="block w-full rounded-md bg-gray-200 dark:bg-gray-700 px-3.5 py-2 text-base dark:text-white placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500" id="id_website" type="url" name="website" placeholder="http://www.example.com/" value="{{ $v.website }}" />
 			{{ template "apply-field-error" $e.website }}
-		</div>
-		<div>
-			<label class="block text-sm/6 font-semibold mb-1" for="id_preferred_gender_pronoun">Preferred Gender Pronoun</label>
-			<input class="block w-full rounded-md bg-gray-200 dark:bg-gray-700 px-3.5 py-2 text-base dark:text-white placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500" id="id_preferred_gender_pronoun" type="text" name="preferred_gender_pronoun" value="{{ $v.preferred_gender_pronoun }}" />
-			{{ template "apply-field-error" $e.preferred_gender_pronoun }}
 		</div>
 	</div>
 
