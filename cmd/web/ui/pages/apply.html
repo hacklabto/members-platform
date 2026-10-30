@@ -52,12 +52,12 @@
 
 	<div class="grid gap-4 sm:grid-cols-2 mt-4">
 		<div>
-			<label class="block text-sm/6 font-semibold mb-1" for="id_sponsor">Name of sponsoring member</label>
+			<label class="block text-sm/6 font-semibold mb-1" for="id_sponsor">Name of sponsoring member *</label>
 			<input class="block w-full rounded-md bg-gray-200 dark:bg-gray-700 px-3.5 py-2 text-base dark:text-white placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500" id="id_sponsor" type="text" name="sponsor" placeholder="None" value="{{ $v.sponsor }}" />
 			{{ template "apply-field-error" $e.sponsor }}
 		</div>
 		<div>
-			<label class="block text-sm/6 font-semibold mb-1" for="id_second_sponsor">Seconding member</label>
+			<label class="block text-sm/6 font-semibold mb-1" for="id_second_sponsor">Name of second sponsoring member *</label>
 			<input class="block w-full rounded-md bg-gray-200 dark:bg-gray-700 px-3.5 py-2 text-base dark:text-white placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500" id="id_second_sponsor" type="text" name="second_sponsor" placeholder="None" value="{{ $v.second_sponsor }}" />
 			{{ template "apply-field-error" $e.second_sponsor }}
 		</div>
